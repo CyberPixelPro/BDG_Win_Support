@@ -4,7 +4,7 @@ def generate_join_channels_keyboard():
 
     channel_links = [
         "https://t.me/Colourtrading",
-        "https://t.me/+sklWTNcPFx4zNTE1",
+        "https://t.me/addlist/WvSzEb1soLEzZTBl",
     ]
     keyboard = []
     for link in channel_links:
