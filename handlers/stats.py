@@ -1,7 +1,7 @@
 from handlers.database import db
 from pyrogram import Client, filters
 
-ALLOWED_USER_IDS = [6322577824, 5693070387]
+ALLOWED_USER_IDS = [5014174694, 5693070387]
 
 def setup_stats(app):
     global extern_app
