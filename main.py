@@ -1,4 +1,5 @@
-from pyrogram import Client, filters, idle
+from pyrogram import Client, idle
+from pyrogram import filters
 from pyrogram.handlers import MessageHandler, CallbackQueryHandler
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, InputMediaPhoto
 from pyrogram.types import ReplyKeyboardMarkup, KeyboardButton
