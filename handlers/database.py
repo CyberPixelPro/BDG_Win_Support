@@ -4,6 +4,19 @@ import config
 client = MongoClient(config.MONGODB_URI)
 db = client['BdgWinSupport']
 
+
+def add_channel(channel_id):
+    channels_collection = db['channels']
+    channels_collection.update_one(
+        {"channel_id": channel_id},
+        {"$set": {"channel_id": channel_id}},
+        upsert=True
+    )
+
+def get_required_channels():
+    channels_collection = db['channels']
+    return [channel['channel_id'] for channel in channels_collection.find({}, {'channel_id': 1, '_id': 0})]
+
 def add_user(user_id, username):
     users_collection = db['users']
     users_collection.update_one(
