@@ -23,6 +23,15 @@ async def fetch_channel_ids():
     required_channel_ids = get_required_channels()
     logging.info(f"Fetched required channel IDs: {required_channel_ids}")
 
+async def pre_check_channels(client):
+    """Pre-check if the bot itself can access the required channels."""
+    for channel_id in required_channel_ids:
+        try:
+            await client.get_chat(channel_id)
+            logging.info(f"Bot has access to channel: {channel_id}")
+        except Exception as e:
+            logging.error(f"Bot cannot access channel {channel_id}: {e}")
+
 async def start(client, message):
     chat_id = message.chat.id
     user_id = message.from_user.id
@@ -98,6 +107,7 @@ setup_broadcast(app)
 async def start_bot():
     logging.info(">> Bot Starting")
     await fetch_channel_ids()  # Fetch channel IDs before starting the bot
+    await pre_check_channels(app)  # Pre-check channels before starting the bot
     await app.start()
     logging.info(">> Bot Started - Press CTRL+C to exit")
     await idle()
@@ -108,5 +118,6 @@ if __name__ == "__main__":
         loop.run_until_complete(start_bot())
     finally:
         loop.close()
+
 
 
