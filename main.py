@@ -25,7 +25,7 @@ async def start(client, message):
         user_full_name += ' ' + message.from_user.last_name
 
     try:
-        if await check_user_joined_channels(client, user_id, config.REQUIRED_CHANNEL_IDS):
+        if await check_user_joined_channels(client, user_id):
             welcome_message = (
                 "**👀 Welcome to BDG Win Support Bot!**\n"
                 "**👋 How can I assist you today?**\n\n"
@@ -56,7 +56,7 @@ async def on_callback_query(client, callback_query):
     chat_id = callback_query.message.chat.id
     data = callback_query.data
     if data == "check_joined":
-        if await check_user_joined_channels(client, callback_query.from_user.id, config.REQUIRED_CHANNEL_IDS):
+        if await check_user_joined_channels(client, user_id):
             await callback_query.message.edit(
                 "Thank you for joining the channels! How can I assist you today?",
                 reply_markup=InlineKeyboardMarkup(
