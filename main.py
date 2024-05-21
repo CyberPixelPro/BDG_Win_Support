@@ -7,13 +7,21 @@ import config
 import logging
 from handlers.mustjoin import check_user_joined_channels, generate_join_channels_keyboard
 from handlers.stats import setup_stats_handlers
-from handlers.database import add_user
+from handlers.database import add_user, get_required_channels
 from handlers.broadcast import setup_broadcast
 
 # Initialize logging
 logging.basicConfig(level=logging.INFO)
 
 app = Client("bot", api_id=config.API_ID, api_hash=config.API_HASH, bot_token=config.BOT_TOKEN)
+
+# Fetch required channel IDs at startup
+required_channel_ids = []
+
+async def fetch_channel_ids():
+    global required_channel_ids
+    required_channel_ids = get_required_channels()
+    logging.info(f"Fetched required channel IDs: {required_channel_ids}")
 
 async def start(client, message):
     chat_id = message.chat.id
@@ -25,7 +33,7 @@ async def start(client, message):
         user_full_name += ' ' + message.from_user.last_name
 
     try:
-        if await check_user_joined_channels(client, user_id):
+        if await check_user_joined_channels(client, user_id, required_channel_ids):
             welcome_message = (
                 "**👀 Welcome to BDG Win Support Bot!**\n"
                 "**👋 How can I assist you today?**\n\n"
@@ -56,7 +64,7 @@ async def on_callback_query(client, callback_query):
     chat_id = callback_query.message.chat.id
     data = callback_query.data
     if data == "check_joined":
-        if await check_user_joined_channels(client, user_id):
+        if await check_user_joined_channels(client, callback_query.from_user.id, required_channel_ids):
             await callback_query.message.edit(
                 "Thank you for joining the channels! How can I assist you today?",
                 reply_markup=InlineKeyboardMarkup(
@@ -89,8 +97,8 @@ setup_broadcast(app)
 
 async def start_bot():
     logging.info(">> Bot Starting")
+    await fetch_channel_ids()  # Fetch channel IDs before starting the bot
     await app.start()
-    await asyncio.sleep(5)  # Wait to ensure all connections and initializations are complete
     logging.info(">> Bot Started - Press CTRL+C to exit")
     await idle()
 
@@ -100,3 +108,4 @@ if __name__ == "__main__":
         loop.run_until_complete(start_bot())
     finally:
         loop.close()
+
