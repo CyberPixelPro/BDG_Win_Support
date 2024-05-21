@@ -1,8 +1,7 @@
 from pyrogram import Client, idle
 from pyrogram import filters
 from pyrogram.handlers import MessageHandler, CallbackQueryHandler
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, InputMediaPhoto
-from pyrogram.types import ReplyKeyboardMarkup, KeyboardButton
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 import asyncio
 import config
 import logging
@@ -10,6 +9,9 @@ from handlers.mustjoin import check_user_joined_channels, generate_join_channels
 from handlers.stats import setup_stats_handlers
 from handlers.database import add_user
 from handlers.broadcast import setup_broadcast
+
+# Initialize logging
+logging.basicConfig(level=logging.INFO)
 
 app = Client("bot", api_id=config.API_ID, api_hash=config.API_HASH, bot_token=config.BOT_TOKEN)
 
@@ -21,7 +23,7 @@ async def start(client, message):
     add_user(user_id, username)
     if message.from_user.last_name:
         user_full_name += ' ' + message.from_user.last_name
-    
+
     try:
         if await check_user_joined_channels(client, user_id, config.REQUIRED_CHANNEL_IDS):
             welcome_message = (
@@ -86,9 +88,10 @@ setup_stats_handlers(app)
 setup_broadcast(app)
 
 async def start_bot():
-    print(">> Bot Starting")
+    logging.info(">> Bot Starting")
     await app.start()
-    print(">> Bot Started - Press CTRL+C to exit")
+    await asyncio.sleep(5)  # Wait to ensure all connections and initializations are complete
+    logging.info(">> Bot Started - Press CTRL+C to exit")
     await idle()
 
 if __name__ == "__main__":
@@ -97,5 +100,3 @@ if __name__ == "__main__":
         loop.run_until_complete(start_bot())
     finally:
         loop.close()
-
-        
