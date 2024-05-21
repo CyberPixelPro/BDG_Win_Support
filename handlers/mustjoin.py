@@ -20,8 +20,8 @@ def generate_join_channels_keyboard():
     
     return InlineKeyboardMarkup(keyboard)
 
-async def check_user_joined_channels(client, user_id):
-    required_channel_ids = get_required_channels()
+async def check_user_joined_channels(client, user_id, required_channel_ids):
+#    required_channel_ids = get_required_channels()
     for channel_id in required_channel_ids:
         try:
             member = await client.get_chat_member(channel_id, user_id)
